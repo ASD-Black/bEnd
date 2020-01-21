@@ -1,8 +1,26 @@
 const mongoose = require('mongoose')
 const passport = require('passport')
 const _ = require('lodash')
+const mysql = require('mysql')
 
 const User = mongoose.model('User')
+
+var con = mysql.createConnection({
+    host: 'localhost', // ip address of server running mysql
+    user: 'root', // user name to your mysql database
+    password: 'root',// corresponding password
+    database: 'shuttle_db'
+    //insecureAuth : true,
+  });
+
+  con.connect(function(err) {
+    if(!err){
+        console.log('SQL db connection succeeded..!')
+    } else{
+        console.log('jkwsnns')
+        console.log('Error in DB connection : ' + JSON.stringify(err, undefined, 2))
+    }
+  });
 
 module.exports.register = (req, res, next) =>{
     var user = new User()
@@ -50,7 +68,35 @@ module.exports.userProfile = (req, res, next) => {
 
 /////////////////////////////////////////////////////////////////////////////
 module.exports.login = (req, res, next) =>{
-    console.log('aaaaaaaaaaaaaaaaaaaaaa')
-    res.send({ message: req.body.email})
+    //res.send({message:'jdfdnjdfkndfjkndnfkdfnkndfnkn'})
+    var email = req.body.email;
+    var password = req.body.password;
 
+    con.query(
+
+        "SELECT * FROM passengers WHERE email = ? AND password = ?",
+        [email, password], function(err, row, field){
+    
+          if(err){
+            console.log(err);
+            res.send({
+              'success': false,
+              'message': 'could not connect to the db'
+            });
+          }
+    
+          if(row.length > 0){
+            res.send({
+              'success': true,
+              'passengers': row[0].email  
+            });
+    
+          }
+          else{
+            res.send({
+              'success': false,
+              'message1': 'passenger not found'
+            });
+          }
+        });
 }
