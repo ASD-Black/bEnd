@@ -13,5 +13,6 @@ router.get('/userProfile', jwtHelper.verifyJwtToken, ctrlUser.userProfile)
 //////////////////////////////////////////////////////////////////////////////////////////
 
 router.post('/login', ctrlUser.login)
+router.post('/signUp', ctrlUser.signUp)
 
 module.exports = router

@@ -66,37 +66,68 @@ module.exports.userProfile = (req, res, next) => {
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+// SQL APIs -----------------------------------------------------------------------------------------------------------------------
+
 module.exports.login = (req, res, next) =>{
-    //res.send({message:'jdfdnjdfkndfjkndnfkdfnkndfnkn'})
+    
     var email = req.body.email;
     var password = req.body.password;
 
     con.query(
 
-        "SELECT * FROM passengers WHERE email = ? AND password = ?",
-        [email, password], function(err, row, field){
+      "SELECT * FROM passengers WHERE email = ? AND password = ?",
+      [email, password], function(err, row, field){
     
-          if(err){
-            console.log(err);
-            res.send({
-              'success': false,
-              'message': 'could not connect to the db'
-            });
-          }
+        if(err){
+          console.log(err);
+          res.send({
+            'success': false,
+            'message': 'could not connect to the db'
+          });
+        }
     
-          if(row.length > 0){
-            res.send({
-              'success': true,
-              'passengers': row[0].email  
+        if(row.length > 0){
+          res.send({
+            'success': true,
+            'passengers': row[0].email  
+          });
+        }
+
+        else{
+          res.send({
+            'success': false,
+            'message1': 'passenger not found'
+          });
+        }
+      }
+    );
+}
+
+module.exports.signUp = (req, res, next) => {
+  var RegNo = req.body.regno;
+  var nic = req.body.nic;
+  var email = req.body.email;
+  var password = req.body.Password;
+
+
+    const queryString = "INSERT INTO passengers (RegNo, nic, email, password) VALUES (?,?,?,?)"
+    //const QS ="SELECT * FROM customer WHERE uname = ? AND enamil = ?"
+
+    con.query(queryString, [RegNo, nic, email, password], (err, results, fields) => {  
+        
+        if(results){
+            res.json({
+            'success': true,
+            'succmessage': 'Thank You... Registation succesfull'
             });
-    
-          }
-          else{
-            res.send({
-              'success': false,
-              'message1': 'passenger not found'
+        }
+
+        else if(err){
+            res.json({
+            'success': false,
+            'errmessage': 'could not connect to the db'
             });
-          }
-        });
+        }
+        
+    })
 }
